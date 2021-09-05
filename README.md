@@ -17,7 +17,7 @@ This is a server side Vintage Story mod that provides a Discord bridge. Features
 5. On the Bot tab, copy the token (you can use the Copy button). Paste that token between the quotes in the `DiscordToken` field in `discordbot.json`. Note that the client secret on the OAuth2 tab is different from the token and cannot be used as a substitue for the token.
 6. Give the bot permissions to interact with your server on the OAuth2 tab. First click the bot checkbox under scopes, then check Send Messages below.
 7. Go to the generated URL shown at the end of the scopes section. Select the server to add your bot to.
-8. In Discord, right click the channel the Bot should listen to, and select Copy ID in the context menu. Paste that channel into the `DiscordChannel` field of `discordbot.json`. The channel id should not be surrounded by quotes.
+8. In Discord, right click the channel the Bot should listen to, and select Copy ID in the context menu. Paste that channel into the `DefaultChannel/DiscordChannel` field of `discordbot.json`. The channel id should not be surrounded by quotes.
 9. Configure any other options you want, then start the server.
 
 # Per group channels
