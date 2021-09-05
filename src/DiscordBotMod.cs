@@ -99,6 +99,9 @@ namespace DiscordBot
 
             api.Server.Logger.EntryAdded -= OnLogMessage;
 
+            client?.LogoutAsync().RunSynchronously();
+            client.Dispose();
+
             base.Dispose();
         }
 
@@ -190,6 +193,8 @@ namespace DiscordBot
 
         private void OnRunGame()
         {
+            UpdatePresence();
+
             if (defaultChannel.channel == null) return;
             if (config.ServerStartMessage.Length == 0) return;
 
@@ -244,7 +249,10 @@ namespace DiscordBot
 
         private void OnPlayerDisconnect(IServerPlayer byPlayer)
         {
-            UpdatePresence();
+            // The player is in the process of logging out, but isn't
+            // completely gone yet. So just subract one from the list
+            // of currently players when updating the bot status.
+            UpdatePresence(-1);
 
             if (defaultChannel.channel == null) return;
             if (config.PlayerLeaveMessage.Length == 0) return;
@@ -261,9 +269,9 @@ namespace DiscordBot
 
             defaultChannel.channel.SendMessageAsync(string.Format(config.PlayerJoinMessage, byPlayer.PlayerName));
         }
-        private void UpdatePresence()
+        private void UpdatePresence(int adjust = 0)
         {
-            int count = api.World.AllOnlinePlayers.Length;
+            int count = api.World.AllOnlinePlayers.Length + adjust;
             string message;
             if (count == 1)
             {
