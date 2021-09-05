@@ -99,8 +99,10 @@ namespace DiscordBot
 
             api.Server.Logger.EntryAdded -= OnLogMessage;
 
-            client?.LogoutAsync().RunSynchronously();
+            client?.LogoutAsync().Wait();
             client.Dispose();
+
+            api.Server.LogNotification("[discordbot] logged out of discord.");
 
             base.Dispose();
         }
