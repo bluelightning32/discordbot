@@ -1,0 +1,12 @@
+{
+  "type": "code",
+  "modid": "discordbot",
+  "name": "Discord Bot",
+  "authors": ["bluelightning32"],
+  "description": "Server side discord chat integration.",
+  "version": "1.0.0",
+  "side": "Server",
+  "dependencies": {
+    "game": "1.15.5"
+  }
+}
