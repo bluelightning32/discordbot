@@ -69,7 +69,7 @@ namespace DiscordBot
                 discordChannelInfo.Add(info.config.DiscordChannel, info);
             }
 
-            StartDiscord();
+            StartDiscord().Wait();
 
             api.Event.PlayerChat += OnPlayerChat;
             api.Event.PlayerNowPlaying += OnPlayerNowPlaying;
@@ -100,29 +100,42 @@ namespace DiscordBot
             api.Server.Logger.EntryAdded -= OnLogMessage;
 
             client?.LogoutAsync().Wait();
-            client.Dispose();
+            client?.Dispose();
 
             api.Server.LogNotification("[discordbot] logged out of discord.");
 
             base.Dispose();
         }
 
-        async void StartDiscord()
+        async Task StartDiscord()
         {
             client = new DiscordSocketClient();
 
+            api.Server.LogNotification("[discordbot] attempting to login.");
             await client.LoginAsync(TokenType.Bot, config.DiscordToken);
 
             await client.StartAsync();
 
+            api.Server.LogNotification("[discordbot] client started.");
+
             TaskCompletionSource<bool> ready = new TaskCompletionSource<bool>();
+            client.Disconnected += (Exception e) =>
+            {
+                api.Server.LogError("[discordbot] disconnected from Discord: {0}.", e);
+                ready.TrySetResult(false);
+                return Task.CompletedTask;
+            };
             client.Ready += () =>
             {
-                api.Server.LogNotification("[discordbot] connection ready.");
                 ready.SetResult(true);
                 return Task.CompletedTask;
             };
-            await ready.Task;
+            if (!await ready.Task) {
+                client = null;
+                return;
+            }
+
+            api.Server.LogNotification("[discordbot] connection ready.");
 
             foreach (KeyValuePair<ulong, ChannelInfo> item in discordChannelInfo)
             {
@@ -147,6 +160,9 @@ namespace DiscordBot
             ChannelInfo info = discordChannelInfo[channelId];
             if (!info.config.ChatToGame)
             {
+                return Task.CompletedTask;
+            }
+            if (client == null) {
                 return Task.CompletedTask;
             }
             if (client.CurrentUser.Id == arg.Author.Id)
@@ -271,8 +287,11 @@ namespace DiscordBot
 
             defaultChannel.channel.SendMessageAsync(string.Format(config.PlayerJoinMessage, byPlayer.PlayerName));
         }
-        private void UpdatePresence(int adjust = 0)
+        private async void UpdatePresence(int adjust = 0)
         {
+            if (client == null) {
+                return;
+            }
             int count = api.World.AllOnlinePlayers.Length + adjust;
             string message;
             if (count == 1)
@@ -283,7 +302,7 @@ namespace DiscordBot
             {
                 message = string.Format("with {0} players", count);
             }
-            client.SetGameAsync(message);
+            await client.SetGameAsync(message);
         }
 
         private void OnPlayerChat(IServerPlayer byPlayer, int channelId, ref string message, ref string data, BoolRef consumed)

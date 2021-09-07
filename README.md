@@ -11,14 +11,14 @@ This is a server side Vintage Story mod that provides a Discord bridge. Features
 # Installation
 
 1. Put the `discordbot.zip` file in the `Mods` folder on the server-side only.
-2. Start the server to create a default `ModConfig/discordbot.json` file in your VS config folder. Note that the server will shutdown immediately this first time, because the Discord token is not set in the file yet.
+2. Start the server to create a default `ModConfig/discordbot.json` file in your VS config folder. Note that until the correct login information is added to the config file, you will see errors in the server log about 'The server sent close 4004: "Authentication failed.'"
 3. [Create a discord application](https://discord.com/developers/applications/) for your server. The application name will become the bot's username.
 4. Click on the Bot tab of the application, then click Add Bot.
 5. On the Bot tab, copy the token (you can use the Copy button). Paste that token between the quotes in the `DiscordToken` field in `discordbot.json`. Note that the client secret on the OAuth2 tab is different from the token and cannot be used as a substitue for the token.
 6. Give the bot permissions to interact with your server on the OAuth2 tab. First click the bot checkbox under scopes, then check Send Messages below.
 7. Go to the generated URL shown at the end of the scopes section. Select the server to add your bot to.
 8. In Discord, right click the channel the Bot should listen to, and select Copy ID in the context menu. Paste that channel into the `DefaultChannel/DiscordChannel` field of `discordbot.json`. The channel id should not be surrounded by quotes.
-9. Configure any other options you want, then start the server.
+9. Restart the server for the mod settings to take effect.
 
 # Per group channels
 
@@ -28,9 +28,16 @@ Server start/stop, death messages, log scrapes, etc. are only sent to the defaul
 
 # Building
 
+This project includes Discord.Net through a git submodule. If the Discord.Net directory appears empty, run this command to populate it:
+```
+$ git submodule update --init --recursive
+```
+
 For debugging purposes, the project can be run from VSCode, on Linux or Windows. Follow [Copygirl's guide](https://github.com/copygirl/howto-example-mod/) on how to setup VSCode, then load the project. Press F5 to run it in the debugger.
 
-To build a release zip, run the following command. If successful, `bin/discordbot.zip` will be created.
+If OmniSharp is not working (provides things like "Go to Definition") in VSCode, then hit F1, type "OmniSharp: Select Project", hit enter, then make sure discordbot.csproj has a checkmark in the drop dwon.
+
+To build a release zip, run the following command from the terminal. If successful, `discordbot/bin/discordbot.zip` will be created.
 ```
-$ dotnet build -c Release
+$ dotnet build -c Release discordbot/
 ```

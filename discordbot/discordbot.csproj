@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard20</TargetFramework>
+	 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	 </PropertyGroup>
+	
+  	<PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    	<AllowedReferenceRelatedFileExtensions>
+			<!-- Prevent the Discord.Net XML and PDB files from getting copied
+				 to the bin directory by only allowing .dll files to be copied. -->
+      		.dll
+    	</AllowedReferenceRelatedFileExtensions> 
+  	</PropertyGroup>
+
+	<ItemGroup>
+		<Reference Include="VintagestoryAPI">
+			<HintPath>$(VINTAGE_STORY)/VintagestoryAPI.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+		<ProjectReference Include="../Discord.Net/src/Discord.Net.WebSocket/Discord.Net.WebSocket.csproj" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)' == 'Release'">
+  		<None Include="resources/**">
+			<Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+	
+	<Target Name="Package" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
+        <Message Text="Deleting $(TargetDir)$(TargetName).deps.json"/>
+		<Delete Files="$(TargetDir)$(TargetName).deps.json" />
+        <Message Text="Deleting $(TargetDir)$(TargetName).pdb"/>
+        <Delete Files="$(TargetDir)$(TargetName).pdb" />
+		<ZipDirectory DestinationFile="bin/$(TargetName).zip" SourceDirectory="$(TargetDir)" Overwrite="true" />
+	</Target>
+</Project>
