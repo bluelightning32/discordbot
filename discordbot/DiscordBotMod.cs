@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 
 [assembly: ModInfo("DiscordBot", "discordbot",
     Description = "Server side discord chat integration.",
-    Version = "1.0.0",
+    Version = "1.0.2",
     Authors = new[] { "bluelightning32" },
     Side = "Server"
     )]
