@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 
 [assembly: ModInfo("DiscordBot", "discordbot",
     Description = "Server side discord chat integration.",
-    Version = "1.0.2",
+    Version = "1.0.3",
     Authors = new[] { "bluelightning32" },
     Side = "Server"
     )]
@@ -323,7 +323,7 @@ namespace DiscordBot
             {
                 allowedMentions = AllowedMentions.None;
             }
-            string stripped = Regex.Replace(message, @"^(<font.*>.*</font> )?(.*)$", "$2");
+            string stripped = Regex.Replace(message, @"^((<.*>)?[^<>:]+:(</[^ ]*>)?) (.*)$", "$4");
             channel.channel.SendMessageAsync(string.Format("**[{0}]** {1}", byPlayer.PlayerName, stripped), allowedMentions: allowedMentions);
         }
     }
