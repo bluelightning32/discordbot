@@ -14,7 +14,7 @@ using System.Text.RegularExpressions;
 
 [assembly: ModInfo("DiscordBot", "discordbot",
     Description = "Server side discord chat integration.",
-    Version = "1.0.3",
+    Version = "1.0.4",
     Authors = new[] { "bluelightning32" },
     Side = "Server"
     )]
@@ -203,10 +203,11 @@ namespace DiscordBot
 
         private void OnShutdown()
         {
+            api.Server.LogNotification("[discordbot] received shutdown game phase notification.");
             if (defaultChannel.channel == null) return;
             if (config.ServerShutdownMessage.Length == 0) return;
 
-            defaultChannel.channel.SendMessageAsync(config.ServerShutdownMessage);
+            defaultChannel.channel.SendMessageAsync(config.ServerShutdownMessage).Wait();
         }
 
         private void OnRunGame()
